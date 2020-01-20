@@ -17,28 +17,27 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Inicio(),
+      home: Home(),
     );
   }
 }
 
-class Inicio extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  _InicioState createState() => _InicioState();
+  _HomeState createState() => _HomeState();
 }
 
-class _InicioState extends State<Inicio> {
-  final int _lineas = 10;
-  int _itemSeleccionado = 0;
+class _HomeState extends State<Home> {
+  int _selectedItem = 0;
 
-  static List<Widget> _pestanas = <Widget>[
-    MovimientosPage(),
-    CategoriasPage(),
+  static List<Widget> _items = <Widget>[
+    MovementsPage(),
+    CategoriesPage(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _itemSeleccionado = index;
+      _selectedItem = index;
     });
   }
 
@@ -48,7 +47,7 @@ class _InicioState extends State<Inicio> {
       appBar: AppBar(
         title: Text('Movimientos'),
       ),
-      body: _pestanas.elementAt(_itemSeleccionado),
+      body: _items.elementAt(_selectedItem),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
@@ -65,143 +64,142 @@ class _InicioState extends State<Inicio> {
             icon: Icon(Icons.list),
           ),
         ],
-        currentIndex: _itemSeleccionado,
+        currentIndex: _selectedItem,
         onTap: _onItemTapped,
       ),
     );
   }
 }
 
-class MovimientosPage extends StatelessWidget {
+class MovementsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<DataProvider>(
-      builder: (_, data, __) {
-        return ListView.separated(
-          itemCount: data.listaMovimientos.length,
-          itemBuilder: (_, index) {
-            if (data.listaMovimientos.length == 0)
-              return Center(
-                child: Text('No hay movimientos'),
-              );
-            else
-              return ListTile(
-                title: Text(data.listaMovimientos.elementAt(index).concepto),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('Cantidad gastada / Maximo'),
-                    Text(data
-                        .getCategoriaById(
-                            data.listaMovimientos.elementAt(index).idCategoria)
-                        .nombre),
-                  ],
-                ),
-                trailing: Text(
-                    'Cantidad: ${data.listaMovimientos.elementAt(index).cantidad}'),
-                leading: Text(
-                    '${data.listaMovimientos.elementAt(index).getFechaFormateada()}'),
-              );
-          },
-          separatorBuilder: (_, index) => Divider(),
-        );
+    // Has to rebuild in every change
+    DataProvider data = Provider.of<DataProvider>(context, listen: true);
+
+    return ListView.separated(
+      itemCount: data.movementList.length,
+      itemBuilder: (_, index) {
+        if (data.movementList.length == 0)
+          return Center(
+            child: Text('No hay movimientos'),
+          );
+        else
+          return ListTile(
+            title: Text(data.movementList.elementAt(index).title),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('Cantidad gastada / Maximo'),
+                Text(data
+                    .getCategoryById(
+                        data.movementList.elementAt(index).categoryId)
+                    .name),
+              ],
+            ),
+            trailing: Text(
+                'Cantidad: ${data.movementList.elementAt(index).quantity}'),
+            leading:
+                Text('${data.movementList.elementAt(index).getFormatedDate()}'),
+          );
       },
+      separatorBuilder: (_, index) => Divider(),
     );
   }
 }
 
-class CategoriasPage extends StatelessWidget {
+class CategoriesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<DataProvider>(
-      builder: (_, data, __) => ListView.separated(
-        itemCount: data.listaCategorias.length,
-        itemBuilder: (_, index) => ListTile(
-          title: Text(data.listaCategorias.elementAt(index).nombre),
-          trailing: Text('Maximo: ' +
-              data.listaCategorias.elementAt(index).maximo.toString()),
-        ),
-        separatorBuilder: (_, __) => Divider(),
+    DataProvider data = Provider.of<DataProvider>(context, listen: true);
+
+    return ListView.separated(
+      itemCount: data.categoryList.length,
+      itemBuilder: (_, index) => ListTile(
+        title: Text(data.categoryList.elementAt(index).name),
+        trailing: Text(
+            'Maximo: ' + data.categoryList.elementAt(index).max.toString()),
       ),
+      separatorBuilder: (_, __) => Divider(),
     );
   }
 }
 
-class Movimiento {
+class Movement {
   final int id;
-  final int idCategoria;
-  final String concepto;
-  final double cantidad;
-  final DateTime fecha;
+  final int categoryId;
+  final String title;
+  final double quantity;
+  final DateTime date;
 
-  Movimiento({
+  Movement({
     this.id,
-    this.idCategoria,
-    this.concepto,
-    this.cantidad,
-    this.fecha,
+    this.categoryId,
+    this.title,
+    this.quantity,
+    this.date,
   });
 
-  String getFechaFormateada() {
-    return DateFormat.yMd().format(this.fecha);
+  String getFormatedDate() {
+    return DateFormat.yMd().format(this.date);
   }
 }
 
-class Categoria {
+class Category {
   final int id;
-  final String nombre;
-  final double maximo;
+  final String name;
+  final double max;
 
-  Categoria({
+  Category({
     this.id,
-    this.nombre,
-    this.maximo,
+    this.name,
+    this.max,
   });
 }
 
 class DataProvider extends ChangeNotifier {
-  List<Categoria> listaCategorias = [
-    Categoria(id: 0, nombre: 'Mercadona', maximo: 100.0),
-    Categoria(id: 1, nombre: 'Fiesta', maximo: 60.0),
-    Categoria(id: 2, nombre: 'Comer fuera', maximo: 30.0),
-    Categoria(id: 3, nombre: 'Capricho', maximo: 20.0),
+  List<Category> categoryList = [
+    Category(id: 0, name: 'Mercadona', max: 100.0),
+    Category(id: 1, name: 'Fiesta', max: 60.0),
+    Category(id: 2, name: 'Comer fuera', max: 30.0),
+    Category(id: 3, name: 'Capricho', max: 20.0),
   ];
 
-  List<Movimiento> listaMovimientos = [
-    Movimiento(
+  List<Movement> movementList = [
+    Movement(
       id: 0,
-      idCategoria: 0,
-      concepto: 'Compra mercadona',
-      cantidad: 20.0,
-      fecha: DateTime(2020, 1, 10),
+      categoryId: 0,
+      title: 'Compra mercadona',
+      quantity: 20.0,
+      date: DateTime(2020, 1, 10),
     ),
-    Movimiento(
+    Movement(
       id: 1,
-      idCategoria: 0,
-      concepto: 'Compra mercadona',
-      cantidad: 23.0,
-      fecha: DateTime(2020, 1, 11),
+      categoryId: 0,
+      title: 'Compra mercadona',
+      quantity: 23.0,
+      date: DateTime(2020, 1, 11),
     ),
-    Movimiento(
+    Movement(
       id: 2,
-      idCategoria: 1,
-      concepto: 'Cerveza Vintage',
-      cantidad: 3.0,
-      fecha: DateTime(2020, 1, 10),
+      categoryId: 1,
+      title: 'Cerveza Vintage',
+      quantity: 3.0,
+      date: DateTime(2020, 1, 10),
     ),
-    Movimiento(
+    Movement(
       id: 3,
-      idCategoria: 2,
-      concepto: 'Burger King',
-      cantidad: 10.0,
-      fecha: DateTime.now(),
+      categoryId: 2,
+      title: 'Burger King',
+      quantity: 10.0,
+      date: DateTime.now(),
     ),
   ];
 
-  Categoria getCategoriaById(int id) {
-    for (Movimiento movimiento in listaMovimientos) {
-      for (Categoria categoria in listaCategorias) {
-        if (movimiento.idCategoria == categoria.id) return categoria;
+  Category getCategoryById(int id) {
+    for (Movement movimiento in movementList) {
+      for (Category categoria in categoryList) {
+        if (movimiento.categoryId == categoria.id) return categoria;
       }
     }
     return null;
