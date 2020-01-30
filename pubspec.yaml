@@ -12,15 +12,13 @@ dependencies:
 
   cupertino_icons: ^0.1.2 
   provider: ^4.0.1
+  get_it:
   intl: ^0.16.1
-  moor_flutter: ^2.0.0
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  moor_generator: ^2.2.0
-  build_runner:
 
 flutter:
   uses-material-design: true
