@@ -6,7 +6,7 @@ class CategoriesView extends StatelessWidget {
     return ListView.separated(
       itemCount: 10,
       itemBuilder: (_, __) => ListTile(
-        title: Text('Titulo'),
+        title: Text('Nombre categoria'),
         trailing: Text('Maximo: 20'),
       ),
       separatorBuilder: (_, __) => Divider(),

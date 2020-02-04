@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:no_gasto_pasto/ui/views/categories_view.dart';
+import 'package:no_gasto_pasto/ui/views/movements_view.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -8,7 +10,10 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   int _itemSeleccionado = 0;
 
-  static List<Widget> _pestanas = <Widget>[];
+  static List<Widget> _pestanas = <Widget>[
+    MovementsView(),
+    CategoriesView(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {

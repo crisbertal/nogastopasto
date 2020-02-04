@@ -6,7 +6,7 @@ class MovementsView extends StatelessWidget {
     return ListView.separated(
       itemCount: 10,
       itemBuilder: (_, __) => ListTile(
-        title: Text('titulo'),
+        title: Text('Concepto movimiento'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
