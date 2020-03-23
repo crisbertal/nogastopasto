@@ -8,16 +8,16 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  int _itemSeleccionado = 0;
+  int _selectedItem = 0;
 
-  static List<Widget> _pestanas = <Widget>[
+  static List<Widget> _tabs = <Widget>[
     MovementsView(),
     CategoriesView(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _itemSeleccionado = index;
+      _selectedItem = index;
     });
   }
 
@@ -25,12 +25,21 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Movimientos'),
+        title: Text('Inicio'),
       ),
-      body: _pestanas.elementAt(_itemSeleccionado),
+      body: _tabs.elementAt(_selectedItem),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          switch (_selectedItem) {
+            case 0:
+              Navigator.pushNamed(context, '/add_movement');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/add_category');
+              break;
+          }
+        },
         child: Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -44,7 +53,7 @@ class _HomeViewState extends State<HomeView> {
             icon: Icon(Icons.list),
           ),
         ],
-        currentIndex: _itemSeleccionado,
+        currentIndex: _selectedItem,
         onTap: _onItemTapped,
       ),
     );
